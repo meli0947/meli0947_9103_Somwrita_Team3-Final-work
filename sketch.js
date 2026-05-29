@@ -2,8 +2,14 @@ let stars = [];
 let schools = [];
 
 function setup() {
-  createCanvas(600, 750);
+  createCanvas(windowWidth, windowHeight);
   colorMode(RGB);
+  initScene();
+}
+
+function initScene() {
+  stars = [];
+  schools = [];
 
   for (let i = 0; i < 280; i++) {
     stars.push({
@@ -36,6 +42,11 @@ function setup() {
       fish: school
     });
   }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  initScene();
 }
 
 function drawFish(x, y, sz, col) {
