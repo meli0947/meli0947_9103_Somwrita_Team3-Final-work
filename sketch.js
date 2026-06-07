@@ -1,5 +1,10 @@
 let stars = [];
 let schools = [];
+let audioGlow = 120;
+
+function preload() {
+  preloadAudio();
+}
 
 function setup() {
   createCanvas(600, 750);
@@ -36,6 +41,7 @@ function setup() {
       fish: school
     });
   }
+setupAudio();
 }
 
 function drawFish(x, y, sz, col) {
@@ -64,8 +70,12 @@ function draw() {
   noStroke();
   for (let s of stars) {
     let tw = sin(frameCount * s.twinkleSpeed + s.twinkleOffset);
-    let alpha = map(tw, -1, 1, 80, s.bright);
-    let sz = s.size + map(tw, -1, 1, 0, 0.8);
+
+let audioBoost = map(audioLevel, 0, 0.3, 0, 160);
+let alpha = map(tw, -1, 1, 80, s.bright) + audioBoost;
+alpha = constrain(alpha, 0, 255);
+
+let sz = s.size + map(tw, -1, 1, 0, 0.8) + audioLevel * 30;
     if (s.size > 1.8) {
       fill(200, 220, 255, 18);
       ellipse(s.x, s.y, sz * 4, sz * 4);
@@ -94,4 +104,5 @@ function draw() {
       drawFish(fx, fy, f.size, color(200, 220, 255, random(140, 200)));
     }
   }
+drawAudio();
 }
