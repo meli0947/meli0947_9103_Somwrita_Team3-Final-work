@@ -5,6 +5,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   colorMode(RGB);
   initScene();
+  initPerlin(stars);
 }
 
 function initScene() {
@@ -73,6 +74,7 @@ function draw() {
   }
 
   noStroke();
+  updatePerlin(stars);
   for (let s of stars) {
     let tw = sin(frameCount * s.twinkleSpeed + s.twinkleOffset);
     let alpha = map(tw, -1, 1, 80, s.bright);
@@ -82,7 +84,7 @@ function draw() {
       ellipse(s.x, s.y, sz * 4, sz * 4);
     }
     fill(210, 225, 255, alpha);
-    ellipse(s.x, s.y, sz, sz);
+    ellipse(s.x + s.px, s.y + s.py, sz, sz);
     if (s.size > 2.2 && tw > 0.5) {
       stroke(220, 235, 255, alpha * 0.6);
       strokeWeight(0.5);
