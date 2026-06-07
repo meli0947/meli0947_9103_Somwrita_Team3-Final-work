@@ -73,12 +73,13 @@ function drawBubbles() {
     if (bubbleLevel > 0.02 && random(1) < 0.12) {
 
       bubbles.push({
-        x: random(width),
-        y: height + 20,
-        size: random(8, 18) + bubbleLevel * 200,
-        speed: random(1, 3),
-        alpha: random(80, 180)
-      });
+      x: random(width),
+      y: height + 20,
+      drift: random(-0.3, 0.3),
+      size: random(8, 18) + bubbleLevel * 200,
+      speed: random(1, 3),
+      alpha: random(80, 180)
+  });
 
     }
 
@@ -89,13 +90,32 @@ function drawBubbles() {
 
     let b = bubbles[i];
 
-    noFill();
-    stroke(220, 235, 255, b.alpha);
-    strokeWeight(1);
+   // Very soft outer glow
+noStroke();
+fill(220, 235, 255, b.alpha * 0.025);
+ellipse(b.x, b.y, b.size * 1.6);
 
-    ellipse(b.x, b.y, b.size);
+// Transparent bubble body
+fill(220, 235, 255, b.alpha * 0.08);
+ellipse(b.x, b.y, b.size);
+
+// Subtle edge
+noFill();
+stroke(220, 235, 255, b.alpha * 0.28);
+strokeWeight(0.8);
+ellipse(b.x, b.y, b.size);
+
+// Small highlight
+noStroke();
+fill(255, 255, 255, b.alpha * 0.28);
+ellipse(
+  b.x - b.size * 0.18,
+  b.y - b.size * 0.18,
+  b.size * 0.12
+);
 
     b.y -= b.speed;
+    b.x += b.drift;
 
     b.alpha -= 0.5;
 
