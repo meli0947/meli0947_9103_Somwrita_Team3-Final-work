@@ -86,6 +86,7 @@ function draw() {
     fill(210, 225, 255, alpha);
     ellipse(s.x + s.px, s.y + s.py, sz, sz);
     if (s.size > 2.2 && tw > 0.5) {
+    let armLen = sz * map(tw, 0.5, 1, 1, 4);
     for (let a = 0; a < 4; a++) {
       let angle = a * HALF_PI + PI / 4;
       let x1 = s.x + s.px + cos(angle) * sz * 0.5;
