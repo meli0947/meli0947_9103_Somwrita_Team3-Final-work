@@ -9,8 +9,8 @@ function initPerlin(starsArray) {
 function updatePerlin(starsArray) {
   for (let s of starsArray) {
     // Free drifting
-    s.px = map(noise(s.noiseOffset + frameCount * 0.008), 0, 1, -150, 150);
-    s.py = map(noise(s.noiseOffset + 100 + frameCount * 0.008), 0, 1, -80, 80);
+    s.px = map(noise(s.noiseOffset + frameCount * 0.003), 0, 1, -150, 150);
+    s.py = map(noise(s.noiseOffset + 100 + frameCount * 0.003), 0, 1, -80, 80);
 
     // Mouse disturbance
     let d = dist(mouseX, mouseY, s.x + s.px, s.y + s.py);
