@@ -11,6 +11,7 @@
 
 let stars   = [];
 let schools = [];
+let bubbles = [];
 
 // ── Per-species config ────────────────────────────────────────
 const SPECIES_CONFIG = {
@@ -218,8 +219,8 @@ function _drawStars() {
       stroke(220, 235, 255, alpha * 0.6);
       strokeWeight(0.5);
       let arm = sz * 2.5;
-      line(s.x - arm, s.y, s.x + arm, s.y);
-      line(s.x, s.y - arm, s.x, s.y + arm);
+      line(s.x + s.px - arm, s.y + s.py, s.x + s.px + arm, s.y + s.py);
+line(s.x + s.px, s.y + s.py - arm, s.x + s.px, s.y + s.py + arm);
       noStroke();
     }
   }

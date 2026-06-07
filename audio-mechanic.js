@@ -76,7 +76,7 @@ function drawBubbles() {
       x: random(width),
       y: height + 20,
       drift: random(-0.3, 0.3),
-      size: random(8, 18) + bubbleLevel * 200,
+      size: random(18, 55) + bubbleLevel * 300,
       speed: random(1, 3),
       alpha: random(80, 180)
   });
