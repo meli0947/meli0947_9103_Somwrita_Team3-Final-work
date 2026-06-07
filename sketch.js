@@ -192,15 +192,6 @@ function _drawStars() {
     }
     fill(210, 225, 255, alpha);
     ellipse(s.x + s.px, s.y + s.py, sz, sz);
-
-    if (s.size > 2.2 && tw > 0.5) {
-      stroke(220, 235, 255, alpha * 0.6);
-      strokeWeight(0.5);
-      let arm = sz * 2.5;
-      line(s.x - arm, s.y, s.x + arm, s.y);
-      line(s.x, s.y - arm, s.x, s.y + arm);
-      noStroke();
-    }
   }
 }
 
