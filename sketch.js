@@ -29,6 +29,10 @@ let zones = [];
 
 const ZONE_PADDING = 80;
 
+function preload() {
+  preloadAudio();
+}
+
 
 // ── Setup ─────────────────────────────────────────────────────
 
