@@ -1,6 +1,7 @@
 let stars = [];
 let schools = [];
 let audioGlow = 120;
+let bubbles = [];
 
 function preload() {
   preloadAudio();
@@ -61,11 +62,18 @@ function drawFish(x, y, sz, col) {
 }
 
 function draw() {
-  for (let y = 0; y < height; y++) {
-    let t = y / height;
-    stroke(lerp(2,1,t), lerp(8,18,t), lerp(45,14,t));
-    line(0, y, width, y);
-  }
+  let bgPulse = map(audioLevel, 0, 0.08, 0, 25);
+
+for (let y = 0; y < height; y++) {
+  let t = y / height;
+
+  let r = lerp(2, 1, t);
+  let g = lerp(8, 18, t) + bgPulse;
+  let b = lerp(45, 14, t) + bgPulse;
+
+  stroke(r, g, b);
+  line(0, y, width, y);
+}
 
   noStroke();
   for (let s of stars) {
@@ -105,4 +113,6 @@ let sz = s.size + map(tw, -1, 1, 0, 0.8) + audioLevel * 30;
     }
   }
 drawAudio();
+
+drawBubbles();
 }
