@@ -9,7 +9,6 @@
 //   audio-mechanic.js  (Yuzhu Wei)      ← sound reactivity (TBD)
 // =============================================================
 
-let stars   = [];
 let schools = [];
 
 // ── Per-species config ────────────────────────────────────────
@@ -45,17 +44,6 @@ function initScene() {
   schools = [];
   zones   = [];
 
-  // ── Starfield ─────────────────────────────────────────────
-  for (let i = 0; i < 280; i++) {
-    stars.push({
-      x:             random(width),
-      y:             random(height),
-      size:          random(0.5, 2.8),
-      bright:        random(150, 255),
-      twinkleSpeed:  random(0.01, 0.04),
-      twinkleOffset: random(TWO_PI)
-    });
-  }
 
   // ── Build 4 zones (2×2 grid) ──────────────────────────────
   let hw = width  / 2; // half width
@@ -152,7 +140,6 @@ function windowResized() {
 
 function draw() {
   _drawBackground();
-  _drawStars();
   updateInputLayer();        // food + ripples from input-controls.js
   _updateAndDrawSchools();
 }
@@ -168,28 +155,6 @@ function _drawBackground() {
   }
 }
 
-
-// ── Starfield ─────────────────────────────────────────────────
-
-function _drawStars() {
-  noStroke();
-  for (let s of stars) {
-    let tw    = sin(frameCount * s.twinkleSpeed + s.twinkleOffset);
-    let alpha = map(tw, -1, 1, 80, s.bright);
-    let sz    = s.size + map(tw, -1, 1, 0, 0.8);
-    if (s.size > 1.8) { fill(200, 220, 255, 18); ellipse(s.x, s.y, sz * 4, sz * 4); }
-    fill(210, 225, 255, alpha);
-    ellipse(s.x, s.y, sz, sz);
-    if (s.size > 2.2 && tw > 0.5) {
-      stroke(220, 235, 255, alpha * 0.6);
-      strokeWeight(0.5);
-      let arm = sz * 2.5;
-      line(s.x - arm, s.y, s.x + arm, s.y);
-      line(s.x, s.y - arm, s.x, s.y + arm);
-      noStroke();
-    }
-  }
-}
 
 
 // ── Schools ───────────────────────────────────────────────────
