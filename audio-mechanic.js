@@ -31,17 +31,37 @@ function setupAudio() {
 }
 
 function drawAudio() {
-  audioLevel = bgmAnalyser.getLevel();
-  bubbleLevel = bubbleAnalyser.getLevel();
+  let targetAudioLevel = 0;
+  let targetBubbleLevel = 0;
+
+  if (bgm.isPlaying()) {
+    targetAudioLevel = bgmAnalyser.getLevel();
+  }
+
+  if (bubbleSound.isPlaying()) {
+    targetBubbleLevel = bubbleAnalyser.getLevel();
+  }
+
+  // Smoothly move current levels towards target levels
+  audioLevel = lerp(audioLevel, targetAudioLevel, 0.08);
+  bubbleLevel = lerp(bubbleLevel, targetBubbleLevel, 0.08);
 }
 
 function toggleAudio() {
   if (bgm.isPlaying()) {
+
     bgm.stop();
     bubbleSound.stop();
+
+    // Reset audio reaction
+    audioLevel = 0;
+    bubbleLevel = 0;
+
   } else {
+
     bgm.loop();
     bubbleSound.loop();
+
   }
 }
 
