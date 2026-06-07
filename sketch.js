@@ -5,6 +5,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   colorMode(RGB);
   initScene();
+  initPerlin(stars);
 }
 
 function initScene() {
@@ -73,6 +74,7 @@ function draw() {
   }
 
   noStroke();
+  updatePerlin(stars);
   for (let s of stars) {
     let tw = sin(frameCount * s.twinkleSpeed + s.twinkleOffset);
     let alpha = map(tw, -1, 1, 80, s.bright);
@@ -82,7 +84,7 @@ function draw() {
       ellipse(s.x, s.y, sz * 4, sz * 4);
     }
     fill(210, 225, 255, alpha);
-    ellipse(s.x, s.y, sz, sz);
+    ellipse(s.x + s.px, s.y + s.py, sz, sz);
     if (s.size > 2.2 && tw > 0.5) {
       stroke(220, 235, 255, alpha * 0.6);
       strokeWeight(0.5);
@@ -90,19 +92,6 @@ function draw() {
       line(s.x - arm, s.y, s.x + arm, s.y);
       line(s.x, s.y - arm, s.x, s.y + arm);
       noStroke();
-    }
-  }
-
-  for (let sc of schools) {
-    sc.cx += sc.vx;
-    sc.cy += sc.vy;
-    if (sc.cx < 60 || sc.cx > width - 60) sc.vx *= -1;
-    if (sc.cy < 80 || sc.cy > height - 80) sc.vy *= -1;
-    for (let f of sc.fish) {
-      let t = frameCount * f.speed * 0.012;
-      let fx = sc.cx + f.offsetX + sin(t + f.offsetX) * 8;
-      let fy = sc.cy + f.offsetY + cos(t * 1.3 + f.offsetY) * 5;
-      drawFish(fx, fy, f.size, color(200, 220, 255, random(140, 200)));
     }
   }
 }
