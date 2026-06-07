@@ -81,7 +81,7 @@ function draw() {
     let sz = s.size + map(tw, -1, 1, 0, 0.8);
     if (s.size > 1.8) {
       fill(200, 220, 255, 18);
-      ellipse(s.x, s.y, sz * 4, sz * 4);
+      ellipse(s.x + s.px, s.y + s.py, sz * 4, sz * 4);
     }
     fill(210, 225, 255, alpha);
     ellipse(s.x + s.px, s.y + s.py, sz, sz);
