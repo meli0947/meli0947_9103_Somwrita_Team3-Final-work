@@ -85,19 +85,5 @@ function draw() {
     }
     fill(210, 225, 255, alpha);
     ellipse(s.x + s.px, s.y + s.py, sz, sz);
-    if (s.size > 2.2 && tw > 0.5) {
-    let armLen = sz * map(tw, 0.5, 1, 1, 4);
-    for (let a = 0; a < 4; a++) {
-      let angle = a * HALF_PI + PI / 4;
-      let x1 = s.x + s.px + cos(angle) * sz * 0.5;
-      let y1 = s.y + s.py + sin(angle) * sz * 0.5;
-      let x2 = s.x + s.px + cos(angle) * armLen;
-      let y2 = s.y + s.py + sin(angle) * armLen;
-      stroke(220, 235, 255, alpha * map(tw, 0.5, 1, 0.2, 0.8));
-      strokeWeight(map(tw, 0.5, 1, 0.3, 0.8));
-      line(x1, y1, x2, y2);
-      }
-      noStroke();
-    }
   }
 }
