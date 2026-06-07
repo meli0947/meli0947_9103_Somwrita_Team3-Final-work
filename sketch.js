@@ -94,17 +94,4 @@ function draw() {
       noStroke();
     }
   }
-
-  for (let sc of schools) {
-    sc.cx += sc.vx;
-    sc.cy += sc.vy;
-    if (sc.cx < 60 || sc.cx > width - 60) sc.vx *= -1;
-    if (sc.cy < 80 || sc.cy > height - 80) sc.vy *= -1;
-    for (let f of sc.fish) {
-      let t = frameCount * f.speed * 0.012;
-      let fx = sc.cx + f.offsetX + sin(t + f.offsetX) * 8;
-      let fy = sc.cy + f.offsetY + cos(t * 1.3 + f.offsetY) * 5;
-      drawFish(fx, fy, f.size, color(200, 220, 255, random(140, 200)));
-    }
-  }
 }
