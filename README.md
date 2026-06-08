@@ -28,7 +28,10 @@ The project is built entirely in p5.js (global mode) with p5.sound for audio ana
 
 **Time-based plant growth** — three plant species (seagrass blades, segmented kelp, branching coral) each grow from `height` upward using `millis()` so growth speed is frame-rate independent. A `growFrac` value (0 → 1 over 20 seconds) scales both height and stroke weight, giving a slow organic reveal. Coral uses a recursive `_drawBranch()` function capped at depth 4.
 
-**Audio amplitude analysis** — two `p5.Amplitude` analysers run in parallel: one for the background music track, one for the looping bubble sound. Their levels (`audioLevel`, `bubbleLevel`) are smoothed with `lerp()` each frame and used to modulate star glow, background pulse, bubble spawn rate, and bubble size. All audio is gated behind a user gesture button to comply with browser autoplay policy.
+**Audio amplitude analysis** — This mechanic uses the `p5.sound` library and amplitude analysis to create a responsive underwater atmosphere. Two p5.Amplitude analysers run in parallel: one for the background music track and one for the looping bubble sound. Their levels (`audioLevel`, `bubbleLevel`) are smoothed using `lerp()` each frame and used to control background brightness, star glow, bubble spawn rate, and bubble size in real time.
+The `p5.sound` library was chosen because it supports real-time audio analysis and integrates smoothly with generative visual systems. All audio playback is triggered through a user interaction button to comply with browser autoplay policies.
+A bubble particle system was also implemented. Bubble particles are continuously generated, animated, faded out, and removed from the array to simulate natural underwater movement. Smooth interpolation using `lerp()` was used throughout the mechanic to create softer visual transitions and a calmer atmosphere.
+`FFT` analysis was also briefly tested during development, but the visual response felt too aggressive for the calm underwater atmosphere. The final system instead uses smoothed amplitude analysis with `lerp()` to create softer and more immersive reactions.
 
 **School flocking system** — the canvas is divided into a 2×2 zone grid. Each of the four schools is assigned one zone and bounces within it. Food particles attract the nearest school centroid; ripple rings repel it. Individual members orbit the centroid using per-member `offsetX/Y` and a `sin()`-based swim wobble. Three species are selectable (small fish, manta ray, jellyfish) with different silhouette drawing functions.
 
@@ -46,7 +49,14 @@ The project is built entirely in p5.js (global mode) with p5.sound for audio ana
 | Menghao Li | User Input | `input-controls.js` |
 
 ### Audio — Xuanning Jin (`audio-mechanic.js`)
-Two audio tracks are analysed with `p5.Amplitude` in real time. The background music level (`audioLevel`) drives star brightness boosts, background colour pulsing, and star size expansion. The bubble sound level (`bubbleLevel`) controls bubble spawn rate and bubble radius. Both levels are smoothed with `lerp()` to prevent jittery jumps. All audio is activated by a single "Enter Ocean" button.
+Responsible for designing and implementing the sound-reactive atmosphere system for the aquarium environment.
+Background music playback and browser-compatible audio interaction button
+Real-time audio analysis using the `p5.sound` library and `p5.Amplitude`
+Audio-reactive background brightness changes
+Dynamic star glow and pulsing effects linked to music volume
+Floating bubble particle system driven by a separate bubble audio layer
+Smooth visual transitions using `lerp()` interpolation
+Integration of the audio system into the final combined project structure and merge workflow
 
 ### Time-Based — Yuzhu Wei (`time-based.js`)
 Plants grow from the sea floor over time using `millis()`. Three types appear: **seagrass blades** (bezier-curve filled shapes that sway with `sin()`), **segmented kelp** (jointed stem with alternating side leaves), and **branching coral** (recursive tree, depth 4). Each plant has a random `spawnTime` offset so they don't all appear at once. Growth fraction (`growFrac`) scales from 0 to 1 over 20 seconds and controls both height and stroke weight.
@@ -102,7 +112,7 @@ All AI-generated sections are commented in the relevant source files with `// Th
 ## Interaction Instructions
 
 1. **Open `index.html`** in a modern browser (Chrome or Firefox recommended).
-2. **Click "Enter Ocean"** (top-left button) to start the background music and bubble soundscape. The aquarium reacts to the audio immediately — watch the stars pulse and bubbles rise.
+2. **Click `Enter Ocean`** (top-left button) to start the background music and bubble soundscape. The aquarium reacts dynamically to the audio — the background subtly shifts in brightness, stars pulse with the music, and bubbles rise through the scene. When the audio stops, the environment gradually returns to its original state while existing bubbles continue drifting upward and fading away.
 3. **Click anywhere** on the canvas to drop food pellets (small green dots). Nearby fish schools will steer toward the food.
 4. **Click and drag** to create ripple rings that disturb the water and push fish schools away.
 5. **Press 1** to switch to Small Fish schools.
