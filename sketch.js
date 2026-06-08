@@ -97,10 +97,12 @@ function initScene() {
     let cy  = random(z.y1 + ZONE_PADDING, z.y2 - ZONE_PADDING);
     schools.push({
       cx, cy,
-      vx:     cos(dir) * 0.45,
-      vy:     sin(dir) * 0.18,
-      zoneId: s,
-      fish:   _buildMembers(cfg)
+      vx:          cos(dir) * 0.45,
+      vy:          sin(dir) * 0.18,
+      zoneId:      s,
+      fish:        _buildMembers(cfg),
+      frightTimer: 0,  // frames remaining in fright state (ripple hit)
+      fedTimer:    0   // frames remaining in fed state (just ate food)
     });
   }
 }
@@ -118,10 +120,12 @@ function rebuildSchools() {
     let cy  = random(z.y1 + ZONE_PADDING, z.y2 - ZONE_PADDING);
     schools.push({
       cx, cy,
-      vx:     cos(dir) * 0.45,
-      vy:     sin(dir) * 0.18,
-      zoneId: s,
-      fish:   _buildMembers(cfg)
+      vx:          cos(dir) * 0.45,
+      vy:          sin(dir) * 0.18,
+      zoneId:      s,
+      fish:        _buildMembers(cfg),
+      frightTimer: 0,
+      fedTimer:    0
     });
   }
 }
@@ -251,6 +255,10 @@ function _updateAndDrawSchools() {
   for (let sc of schools) {
     let z = zones[sc.zoneId];
 
+    // ── Tick state timers ────────────────────────────────────
+    if (sc.frightTimer > 0) sc.frightTimer--;
+    if (sc.fedTimer    > 0) sc.fedTimer--;
+
     // ── Food attraction ──────────────────────────────────────
     let nearest     = null;
     let nearestDist = Infinity;
@@ -265,21 +273,37 @@ function _updateAndDrawSchools() {
       sc.vy = lerp(sc.vy, sc.vy + (nearest.y - sc.cy) * strength, 0.22);
       // When the school centre is close enough, "eat" the pellet —
       // consume() is defined in input-controls.js and drains life quickly.
-      if (nearestDist < 40) nearest.consume();
+      if (nearestDist < 40) {
+        nearest.consume();
+        sc.fedTimer = 90; // stay in "fed" state for ~1.5 s at 60fps
+      }
     }
 
-    // ── Ripple repulsion ─────────────────────────────────────
+    // ── Ripple repulsion + fright ────────────────────────────
     for (let r of ripps) {
       let d = dist(sc.cx, sc.cy, r.x, r.y);
       if (d < RIPPLE_DISTURB_RADIUS && d > 0.1) {
         let force = map(d, 0, RIPPLE_DISTURB_RADIUS, 0.9, 0);
         sc.vx += ((sc.cx - r.x) / d) * force * 0.05;
         sc.vy += ((sc.cy - r.y) / d) * force * 0.05;
+        // A strong ripple hit triggers fright — school briefly darts away faster
+        if (force > 0.5 && sc.frightTimer === 0) {
+          sc.frightTimer = 50;
+          sc.vx *= 2.2;
+          sc.vy *= 2.2;
+        }
       }
     }
 
-    // ── Zone boundary bounce ──────────────────────────────────
-    let maxSpd = species === 3 ? 0.6 : 1.6;
+    // ── Speed cap — frightened schools move faster ────────────
+    // Fright multiplies the cap; fed schools slow down slightly (contentment)
+    let baseSpd = species === 3 ? 0.6 : 1.6;
+    let maxSpd  = sc.frightTimer > 0
+      ? baseSpd * map(sc.frightTimer, 50, 0, 2.8, 1.0)  // ramp back down as timer expires
+      : sc.fedTimer > 0
+        ? baseSpd * 0.55   // slow, lazy drift after eating
+        : baseSpd;
+
     sc.vx = constrain(sc.vx, -maxSpd, maxSpd);
     sc.vy = constrain(sc.vy, -maxSpd * 0.5, maxSpd * 0.5);
     sc.cx += sc.vx;
@@ -291,12 +315,32 @@ function _updateAndDrawSchools() {
 
     // ── Draw members ──────────────────────────────────────────
     let facingRight = sc.vx >= 0;
+    let speed       = sqrt(sc.vx * sc.vx + sc.vy * sc.vy); // actual school speed this frame
+
     for (let f of sc.fish) {
-      let t   = frameCount * f.speed * 0.01;
-      let fx  = sc.cx + f.offsetX + sin(t + f.offsetX * 0.05) * 3;
-      let fy  = sc.cy + f.offsetY + cos(t * 1.2 + f.offsetY * 0.05) * 2;
-      // Use f.alpha (set once at spawn) so colour is stable across frames
-      let col = color(200, 220, 255, f.alpha);
+      let t  = frameCount * f.speed * 0.01;
+
+      // Swim wobble amplitude scales with school speed — faster = more tail-wag
+      let wobbleX = map(speed, 0, baseSpd * 2.8, 2, 9);
+      let wobbleY = map(speed, 0, baseSpd * 2.8, 1, 5);
+
+      // Fed: members drift slightly inward (tighter cluster, lazy huddle)
+      let offsetScale = sc.fedTimer > 0
+        ? lerp(1.0, 0.55, map(sc.fedTimer, 90, 0, 1, 0))
+        : 1.0;
+
+      let fx = sc.cx + f.offsetX * offsetScale + sin(t + f.offsetX * 0.05) * wobbleX;
+      let fy = sc.cy + f.offsetY * offsetScale + cos(t * 1.2 + f.offsetY * 0.05) * wobbleY;
+
+      // Per-member "breath" — alpha pulses gently on a slow per-member sine wave.
+      // Frightened: members flash brighter. Fed: members dim slightly (relaxed).
+      let breathCycle = sin(frameCount * 0.018 + f.offsetX * 0.12);
+      let breathAlpha = f.alpha + map(breathCycle, -1, 1, -18, 18);
+      if (sc.frightTimer > 0) breathAlpha += map(sc.frightTimer, 50, 0, 55, 0);
+      if (sc.fedTimer    > 0) breathAlpha -= map(sc.fedTimer,    90, 0, 30, 0);
+      breathAlpha = constrain(breathAlpha, 60, 255);
+
+      let col = color(200, 220, 255, breathAlpha);
 
       if (species === 3) {
         fy += sin(frameCount * 0.025 + f.offsetX * 0.06) * 6;
