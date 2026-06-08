@@ -76,12 +76,23 @@ All AI-generated sections are commented in the relevant source files with `// Th
 
 ## External References
 
+### Visual & Concept Inspiration
+
 - **Cakir, A. (2022).** *Cosmic Ocean* [Digital illustration]. Displate. https://displate.com/displate/5491899 — Core visual reference for the deep blue / silver-line starry aquarium aesthetic.
 - **Musée du Louvre. (n.d.).** Online tours. https://www.louvre.fr/en/online-tours — Inspiration for the immersive single-window exhibition format.
-- **Ramalho, D. (2022).** Perlin Noise – flow field. David's Raging Nexus. https://ragingnexus.com/creative-code-lab/experiments/perlin-noise-flow-field/ — Reference for applying Perlin noise to particle drift.
 - **SEA LIFE Melbourne Aquarium. (2025).** Journey through living light with Submerged. https://www.visitsealife.com/melbourne/information/news/journey-through-living-light-with-submerged-at-sea-life-melbourne-aquarium/ — Reference for bioluminescent and glowing underwater aesthetics.
-- **Williams, M. (2023).** How to create timeless sonic branding. Creative Review. https://www.creativereview.co.uk/sonic-branding-molecular-sound/ — Reference for music-reactive visual systems.
-- **p5.js Reference.** https://p5js.org/reference/ — Core library documentation used throughout development.
+
+### Technical References (code techniques used outside course material)
+
+- **Reynolds, C. (1987).** Flocks, herds and schools: A distributed behavioral model. *ACM SIGGRAPH Computer Graphics*, 21(4), 25–34. https://www.red3d.com/cwr/boids/ — The simplified Boids algorithm underpins the food-attraction and ripple-repulsion steering behaviour in `sketch.js` (`_updateAndDrawSchools`). This technique is also commented in the code.
+
+- **Shiffman, D. (2024).** *The Nature of Code*, Chapter 0: Randomness & Perlin Noise. https://natureofcode.com/random/ — The dual-axis independent noise sampling pattern used in `perlin.js` (`updatePerlin`) to generate smooth 2D star drift is drawn from this reference. This technique is also commented in the code.
+
+- **Shiffman, D. (2024).** *The Nature of Code*, Chapter 8: Fractals. https://natureofcode.com/fractals/ — The recursive `_drawBranch()` coral structure in `time-based.js` is based on the recursive fractal tree algorithm described here. This technique is also commented in the code.
+
+- **p5.js Reference — `bezierVertex()`.** https://p5js.org/reference/p5/bezierVertex/ — Used extensively in `input-controls.js` to construct filled biological silhouettes (fish body, manta ray wings, jellyfish bell) via `beginShape` / `bezierVertex` / `endShape`.
+
+- **p5.sound Reference — `p5.Amplitude`.** https://p5js.org/reference/p5.sound/p5.Amplitude/ — Used in `audio-mechanic.js` to analyse real-time amplitude of two audio tracks and drive visual responses (star glow, background pulse, bubble spawn rate).
 
 ---
 
@@ -107,10 +118,10 @@ project/
 ├── index.html            # Entry point — loads all scripts
 ├── style.css             # Base styles (full-screen canvas)
 ├── sketch.js             # Main p5.js sketch — coordinates all modules
-├── audio-mechanic.js     # Audio mechanic (Yuzhu Wei)
-├── time-based.js         # Time-based plant growth mechanic (Menghao Li)
-├── perlin.js             # Perlin noise star drift mechanic (Xuanning Jin)
-├── input-controls.js     # User input mechanic (Zihan Zhong)
+├── audio-mechanic.js     # Audio mechanic (Xuanning Jin)
+├── time-based.js         # Time-based plant growth mechanic (Yuzhu Wei)
+├── perlin.js             # Perlin noise star drift mechanic (Zihan Zhong)
+├── input-controls.js     # User input mechanic (Menghao Li)
 └── libraries/
     ├── p5.min.js
     └── p5.sound.min.js
