@@ -24,7 +24,7 @@ The project is built entirely in p5.js (global mode) with p5.sound for audio ana
 
 **Background gradient** — drawn line by line each frame so it can pulse in response to audio amplitude (`audioLevel` shifts the green and blue channels). This avoids redraw artifacts while keeping the gradient reactive.
 
-**Perlin noise star field** — 280 star particles each carry a `noiseOffset` seed. Every frame, `noise()` maps their position to a smooth drift (`px`, `py`). The mouse adds a secondary disturbance: stars within 200px of the cursor receive an additional angle-driven nudge, also Perlin-derived. Twinkle is handled separately with a per-star `sin()` oscillator.
+**Perlin noise star field** — 280 star particles each carry a unique `noiseOffset` seed and an individual `driftSpeed`, both randomised at initialisation. Every frame, `noise()` maps each star's position to a smooth, continuous drift (`px`, `py`), giving the star field a slow, breathing quality that feels organic rather than mechanical. The mouse adds a secondary disturbance: stars within 200px of the cursor receive an additional Perlin-derived, angle-driven nudge, creating gentle, unpredictable ripples through the field. Twinkle is handled separately with a per-star `sin()` oscillator.
 
 **Time-based plant growth** — three plant species (seagrass blades, segmented kelp, branching coral) each grow from `height` upward using `millis()` so growth speed is frame-rate independent. A `growFrac` value (0 → 1 over 20 seconds) scales both height and stroke weight, giving a slow organic reveal. Coral uses a recursive `_drawBranch()` function capped at depth 4.
 
@@ -52,7 +52,10 @@ Two audio tracks are analysed with `p5.Amplitude` in real time. The background m
 Plants grow from the sea floor over time using `millis()`. Three types appear: **seagrass blades** (bezier-curve filled shapes that sway with `sin()`), **segmented kelp** (jointed stem with alternating side leaves), and **branching coral** (recursive tree, depth 4). Each plant has a random `spawnTime` offset so they don't all appear at once. Growth fraction (`growFrac`) scales from 0 to 1 over 20 seconds and controls both height and stroke weight.
 
 ### Perlin Noise & Randomness — Zihan Zhong (`perlin.js`)
-Each star receives a unique `noiseOffset` seed at initialisation. Every frame, two independent noise calls (offset by 100) generate smooth `px` and `py` drift values. A third noise call produces a random angle for mouse-proximity disturbance. Random values also control star size, brightness, twinkle speed, and twinkle phase offset, ensuring no two stars behave the same way. The `random()` calls in school member placement (`_buildMembers`) use random seeds implicitly through p5's internal state.
+The interaction is built on two layers. 
+- **Autonomous Drift** — Every star moves independently using Perlin noise, with its position offset (`px`, `py`) calculated each frame from `noise()`. Because each star has a unique `noiseOffset` seed and a randomised `driftSpeed`, no two stars move in the same rhythm — the overall motion feels like a living, breathing field rather than a uniform animation. 
+- **Mouse Disturbance** — When the cursor moves within 200px of a star, a secondary Perlin-derived force is applied in a noise-driven angular direction, pushing the star off its natural drift path. The closer the cursor, the stronger the push. Once the cursor moves away, the star gradually returns to its Perlin-driven trajectory.
+Randomness initialises the system — each star's seed, speed, size, brightness, and twinkle phase are all randomised at setup. Perlin noise then governs the ongoing behaviour, ensuring movement is smooth and continuous rather than jumpy or chaotic. The combination produces a star field that feels simultaneously unpredictable and serene.
 
 ### User Input — Menghao Li (`input-controls.js`)
 - **Mouse click** — spawns a `FoodParticle` that drifts downward with slight horizontal wobble. Schools within the same zone detect the nearest food particle and steer toward it.
