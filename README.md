@@ -68,9 +68,25 @@ The interaction is built on two layers.
 Randomness initialises the system — each star's seed, speed, size, brightness, and twinkle phase are all randomised at setup. Perlin noise then governs the ongoing behaviour, ensuring movement is smooth and continuous rather than jumpy or chaotic. The combination produces a star field that feels simultaneously unpredictable and serene.
 
 ### User Input — Menghao Li (`input-controls.js`)
-- **Mouse click** — spawns a `FoodParticle` that drifts downward with slight horizontal wobble. Schools within the same zone detect the nearest food particle and steer toward it.
-- **Mouse drag** — spawns `Ripple` rings that expand outward. Any school centroid within `RIPPLE_DISTURB_RADIUS` is pushed away from the ring's origin.
-- **Keys 1 / 2 / 3** — switch the active species (Small Fish / Manta Ray / Jellyfish) and call `rebuildSchools()` to reposition all four schools in fresh random locations.
+
+This mechanic turns the viewer into a participant. Three input channels — 
+click, drag, and number keys — drive both the immediate action and a 
+chain of school responses.
+**Mouse click — feeding the fish.** A green pellet drops and slowly 
+tumbles downward (`FoodParticle`). The nearest school steers toward it, 
+and when close enough, `consume()` is called and the pellet fades. The 
+school then enters a *fed* state for ~1.5s: speed drops to 55% and 
+members huddle inward (`clusterScale` lerps 1.0 → 0.55 → 1.0).
+**Mouse drag — disturbing the water.** Each drag leaves expanding double 
+ripple rings (`Ripple`). Schools within range are pushed away; a strong 
+hit also triggers *fright* — the school darts at 2.8× speed, members 
+flash brighter, and the burst ramps back to baseline over ~50 frames.
+**Keys 1 / 2 / 3 — switching species.** Swaps the aquarium between Small 
+Fish, Manta Ray, and Jellyfish. A brief dark overlay (`switchFade`) 
+softens the transition, then `rebuildSchools()` repositions all four 
+schools randomly.
+All transitions use `lerp()` so the schools feel like living organisms 
+rather than state machines snapping between values.
 
 ---
 
@@ -107,13 +123,18 @@ All AI-generated sections are commented in the relevant source files with `// Th
 
 - **p5.sound Reference — `p5.Amplitude`.** https://p5js.org/reference/p5.sound/p5.Amplitude/ — Used in `audio-mechanic.js` to analyse real-time amplitude of two audio tracks and drive visual responses (star glow, background pulse, bubble spawn rate).
 
+- p5.js Reference — `lerp()`. https://p5js.org/reference/p5/lerp/ — 
+Used throughout `input-controls.js` and `sketch.js` for smooth state 
+transitions (cluster scale, fade overlay, audio level smoothing).
+
 ---
 
 ## Interaction Instructions
 
 1. **Open `index.html`** in a modern browser (Chrome or Firefox recommended).
 2. **Click `Enter Ocean`** (top-left button) to start the background music and bubble soundscape. The aquarium reacts dynamically to the audio — the background subtly shifts in brightness, stars pulse with the music, and bubbles rise through the scene. When the audio stops, the environment gradually returns to its original state while existing bubbles continue drifting upward and fading away.
-3. **Click anywhere** on the canvas to drop food pellets (small green dots). Nearby fish schools will steer toward the food.
+3. **Click anywhere** on the canvas to drop food pellets (small spinning 
+green pellets). Nearby fish schools will steer toward the food, and visibly cluster together for a moment after eating it.
 4. **Click and drag** to create ripple rings that disturb the water and push fish schools away.
 5. **Press 1** to switch to Small Fish schools.
 6. **Press 2** to switch to Manta Ray schools.
