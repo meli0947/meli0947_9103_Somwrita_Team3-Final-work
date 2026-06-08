@@ -24,15 +24,16 @@ function initPerlin(starsArray) {
   for (let s of starsArray) {
     s.px = 0;
     s.py = 0;
-    s.noiseOffset = random(1000);
+    s.noiseOffset = random(1000);      // random noise seed
+    s.driftSpeed  = random(0.0005, 0.002); // random drift speed per star
   }
 }
 
 function updatePerlin(starsArray) {
   for (let s of starsArray) {
     // Free drifting
-    s.px = map(noise(s.noiseOffset + frameCount * 0.001), 0, 1, -150, 150);
-    s.py = map(noise(s.noiseOffset + 100 + frameCount * 0.001), 0, 1, -80, 80);
+    s.px = map(noise(s.noiseOffset + frameCount * s.driftSpeed), 0, 1, -150, 150);
+    s.py = map(noise(s.noiseOffset + 100 + frameCount * s.driftSpeed), 0, 1, -80, 80);
 
     // Mouse disturbance
     let d = dist(mouseX, mouseY, s.x + s.px, s.y + s.py);
