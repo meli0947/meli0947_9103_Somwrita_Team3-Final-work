@@ -1,3 +1,25 @@
+// =============================================================
+// perlin.js
+// Perlin Noise & Randomness Mechanic — Organic Star Movement
+// Creative Director: Zihan Zhong
+// =============================================================
+// Each star receives a unique random noiseOffset seed at init.
+// Every frame, two independent noise() calls produce smooth px/py
+// drift values. A third noise() call generates a random angle
+// used for mouse-proximity disturbance, so stars near the cursor
+// scatter organically rather than in a fixed direction.
+// Random values control each star's size, brightness, twinkle
+// speed, and twinkle phase so no two stars behave identically.
+// =============================================================
+// Public API (called from sketch.js):
+//   initPerlin(starsArray)    — call inside initScene()
+//   updatePerlin(starsArray)  — call inside _drawStars()
+// =============================================================
+// This code was developed with the assistance of Claude (Anthropic).
+// Claude assisted with the dual-axis noise drift pattern and the
+// mouse-disturbance angle derivation using noise() * TWO_PI.
+// =============================================================
+
 function initPerlin(starsArray) {
   for (let s of starsArray) {
     s.px = 0;
