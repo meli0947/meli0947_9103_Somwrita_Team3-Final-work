@@ -97,12 +97,13 @@ function initScene() {
     let cy  = random(z.y1 + ZONE_PADDING, z.y2 - ZONE_PADDING);
     schools.push({
       cx, cy,
-      vx:          cos(dir) * 0.45,
-      vy:          sin(dir) * 0.18,
-      zoneId:      s,
-      fish:        _buildMembers(cfg),
-      frightTimer: 0,  // frames remaining in fright state (ripple hit)
-      fedTimer:    0   // frames remaining in fed state (just ate food)
+      vx:           cos(dir) * 0.45,
+      vy:           sin(dir) * 0.18,
+      zoneId:       s,
+      fish:         _buildMembers(cfg),
+      frightTimer:  0,    // frames remaining in fright state (ripple hit)
+      fedTimer:     0,    // frames remaining in fed state (just ate food)
+      clusterScale: 1.0   // current offset scale — lerped toward target each frame
     });
   }
 }
@@ -120,12 +121,13 @@ function rebuildSchools() {
     let cy  = random(z.y1 + ZONE_PADDING, z.y2 - ZONE_PADDING);
     schools.push({
       cx, cy,
-      vx:          cos(dir) * 0.45,
-      vy:          sin(dir) * 0.18,
-      zoneId:      s,
-      fish:        _buildMembers(cfg),
-      frightTimer: 0,
-      fedTimer:    0
+      vx:           cos(dir) * 0.45,
+      vy:           sin(dir) * 0.18,
+      zoneId:       s,
+      fish:         _buildMembers(cfg),
+      frightTimer:  0,
+      fedTimer:     0,
+      clusterScale: 1.0
     });
   }
 }
@@ -324,13 +326,13 @@ function _updateAndDrawSchools() {
       let wobbleX = map(speed, 0, baseSpd * 2.8, 2, 9);
       let wobbleY = map(speed, 0, baseSpd * 2.8, 1, 5);
 
-      // Fed: members drift slightly inward (tighter cluster, lazy huddle)
-      let offsetScale = sc.fedTimer > 0
-        ? lerp(1.0, 0.55, map(sc.fedTimer, 90, 0, 1, 0))
-        : 1.0;
+      // clusterScale lerps toward target each frame — fed schools slowly huddle
+      // inward, then gently expand back out. 0.06 lerp factor ≈ 0.5s to settle.
+      let targetScale = sc.fedTimer > 0 ? 0.55 : 1.0;
+      sc.clusterScale = lerp(sc.clusterScale, targetScale, 0.06);
 
-      let fx = sc.cx + f.offsetX * offsetScale + sin(t + f.offsetX * 0.05) * wobbleX;
-      let fy = sc.cy + f.offsetY * offsetScale + cos(t * 1.2 + f.offsetY * 0.05) * wobbleY;
+      let fx = sc.cx + f.offsetX * sc.clusterScale + sin(t + f.offsetX * 0.05) * wobbleX;
+      let fy = sc.cy + f.offsetY * sc.clusterScale + cos(t * 1.2 + f.offsetY * 0.05) * wobbleY;
 
       // Per-member "breath" — alpha pulses gently on a slow per-member sine wave.
       // Frightened: members flash brighter. Fed: members dim slightly (relaxed).
