@@ -21,8 +21,9 @@
 let foodParticles  = [];
 let ripples        = [];
 let currentSpecies = 1;  // 1 = Small Fish, 2 = Manta Ray, 3 = Jellyfish
+let switchFade     = 0;  // opacity of the transition flash overlay (255 → 0)
 
-const FOOD_ATTRACT_RADIUS   = 180;
+// Note: food attraction radius is applied in sketch.js _updateAndDrawSchools()
 const RIPPLE_DISTURB_RADIUS = 130;
 
 
@@ -34,8 +35,23 @@ function initInputControls() {
 
 
 // ── Public API ────────────────────────────────────────────────
+// Dependencies (defined in sketch.js):
+//   rebuildSchools()    — called on species switch
+// Exported for sketch.js:
+//   getFoodParticles()  — used in _updateAndDrawSchools()
+//   getRipples()        — used in _updateAndDrawSchools()
+//   getCurrentSpecies() — used in _updateAndDrawSchools() and rebuildSchools()
 
 function updateInputLayer() {
+  // Draw transition flash overlay when species is switched
+  if (switchFade > 0) {
+    push();
+    noStroke();
+    fill(10, 20, 60, switchFade * 0.45);
+    rect(0, 0, width, height);
+    pop();
+    switchFade -= 16; // fade out over ~16 frames
+  }
   _updateFood();
   _updateRipples();
 }
@@ -63,16 +79,19 @@ function keyPressed() {
   // We only want to reset schools, so we call the dedicated helper instead.
   if (key === '1' && currentSpecies !== 1) {
     currentSpecies = 1;
+    switchFade = 255; // trigger dark-flash transition
     rebuildSchools(); // defined in sketch.js — repositions all 4 schools randomly
     console.log('[input-controls] → Small Fish');
   }
   if (key === '2' && currentSpecies !== 2) {
     currentSpecies = 2;
+    switchFade = 255;
     rebuildSchools();
     console.log('[input-controls] → Manta Ray');
   }
   if (key === '3' && currentSpecies !== 3) {
     currentSpecies = 3;
+    switchFade = 255;
     rebuildSchools();
     console.log('[input-controls] → Jellyfish');
   }
@@ -102,32 +121,44 @@ function _updateRipples() {
 
 class FoodParticle {
   constructor(x, y) {
-    this.x    = x;
-    this.y    = y;
-    this.vx   = random(-0.35, 0.35);
-    this.vy   = random(0.25, 0.6);
-    this.size = random(3.5, 5.5);
-    this.life = 255;
+    this.x     = x;
+    this.y     = y;
+    this.vx    = random(-0.35, 0.35);
+    this.vy    = random(0.25, 0.6);
+    this.size  = random(3.5, 5.5);
+    this.life  = 255;
+    this.angle = random(TWO_PI); // initial rotation angle for the pellet
+    this.spin  = random(-0.06, 0.06); // slow tumble speed
   }
 
   update() {
-    this.x   += this.vx;
-    this.vx  += random(-0.04, 0.04);
-    this.vx   = constrain(this.vx, -0.5, 0.5);
-    this.y   += this.vy;
-    this.life -= 1.1;
+    this.x     += this.vx;
+    this.vx    += random(-0.04, 0.04);
+    this.vx     = constrain(this.vx, -0.5, 0.5);
+    this.y     += this.vy;
+    this.angle += this.spin; // rotate each frame
+    this.life  -= 1.1;
   }
 
   draw() {
     let a = map(this.life, 255, 0, 220, 0);
     push();
+    translate(this.x, this.y);
+    rotate(this.angle);
     noStroke();
+    // soft glow halo
     fill(190, 235, 160, a * 0.22);
-    ellipse(this.x, this.y, this.size * 4, this.size * 4);
+    ellipse(0, 0, this.size * 4, this.size * 4);
+    // pellet body as a small rounded rect — looks more like fish food than a plain dot
     fill(190, 240, 160, a);
-    ellipse(this.x, this.y, this.size, this.size);
+    rectMode(CENTER);
+    rect(0, 0, this.size, this.size * 1.3, this.size * 0.35);
     pop();
   }
+
+  // consume() — called by sketch.js when a school centroid reaches this pellet.
+  // Drains life quickly so the food visibly disappears as fish "eat" it.
+  consume() { this.life -= 18; }
 
   isDead() { return this.life <= 0 || this.y > height + 20; }
 }
@@ -140,6 +171,7 @@ class Ripple {
     this.x     = x;
     this.y     = y;
     this.r     = 5;
+    this.r2    = 2;   // inner ring starts smaller and expands slower
     this.maxR  = random(55, RIPPLE_DISTURB_RADIUS);
     this.speed = random(1.8, 3.0);
     this.alpha = 150;
@@ -147,18 +179,25 @@ class Ripple {
 
   update() {
     this.r    += this.speed;
+    this.r2   += this.speed * 0.6; // inner ring lags behind outer ring
     this.alpha = map(this.r, 5, this.maxR, 150, 0);
   }
 
   draw() {
     push();
     noFill();
+    // Outer glow ring
     stroke(160, 200, 255, this.alpha * 0.3);
     strokeWeight(2.5);
     ellipse(this.x, this.y, this.r * 2.2, this.r * 2.2);
+    // Outer sharp ring
     stroke(210, 230, 255, this.alpha);
     strokeWeight(1);
     ellipse(this.x, this.y, this.r * 2, this.r * 2);
+    // Inner ring — softer, slightly delayed, adds depth to the disturbance
+    stroke(180, 220, 255, this.alpha * 0.5);
+    strokeWeight(0.8);
+    ellipse(this.x, this.y, this.r2 * 2, this.r2 * 2);
     pop();
   }
 

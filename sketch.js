@@ -263,6 +263,9 @@ function _updateAndDrawSchools() {
       let strength = map(nearestDist, 0, min(z.x2 - z.x1, z.y2 - z.y1), 0.012, 0.003);
       sc.vx = lerp(sc.vx, sc.vx + (nearest.x - sc.cx) * strength, 0.22);
       sc.vy = lerp(sc.vy, sc.vy + (nearest.y - sc.cy) * strength, 0.22);
+      // When the school centre is close enough, "eat" the pellet —
+      // consume() is defined in input-controls.js and drains life quickly.
+      if (nearestDist < 40) nearest.consume();
     }
 
     // ── Ripple repulsion ─────────────────────────────────────
