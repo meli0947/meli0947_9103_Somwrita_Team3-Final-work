@@ -3,14 +3,20 @@
 // Starry Deep-Sea Aquarium  |  IDEA9103 Team 3
 // =============================================================
 // Coordinates all mechanic modules:
-//   input-controls.js  (Menghao Li)   ← user input
+//   audio-mechanic.js  (Xuanning Jin)  ← sound reactivity
+//   time-based.js      (Yuzhu Wei)     ← time-based plant growth
 //   perlin.js          (Zihan Zhong)   ← organic star movement
-//   plants.js          (Yuzhu Wei)    ← time-based plant growth
-//   audio-mechanic.js  (Xuanning Jin)      ← sound reactivity (TBD)
+//   input-controls.js  (Menghao Li)    ← user input
+// =============================================================
+// This code was developed with the assistance of Claude (Anthropic).
+// Claude assisted with the zone-boundary bounce logic in
+// _updateAndDrawSchools(), the _buildMembers() placement algorithm,
+// and the overall module coordination structure.
 // =============================================================
 
 let stars   = [];
 let schools = [];
+let bubbles = [];
 
 // ── Per-species config ────────────────────────────────────────
 const SPECIES_CONFIG = {
@@ -29,14 +35,20 @@ let zones = [];
 
 const ZONE_PADDING = 80;
 
+function preload() {
+  preloadAudio();
+}
+
 
 // ── Setup ─────────────────────────────────────────────────────
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   colorMode(RGB);
-  initInputControls(); // from input-controls.js
+
+  initInputControls();
   initScene();
+  setupAudio();
 }
 
 
@@ -156,24 +168,35 @@ function windowResized() {
 // ── Draw loop ─────────────────────────────────────────────────
 
 function draw() {
+  drawAudio();
+
   _drawBackground();
-  _drawStars();              // twinkling star field (perlin drift)
-  updatePlants();            // time-based sea-floor plants (plants.js)
-  updateInputLayer();        // food + ripples (input-controls.js)
-  _updateAndDrawSchools();   // fish schools
+  _drawStars();
+
+  updatePlants();
+  updateInputLayer();
+  _updateAndDrawSchools();
+
+  drawBubbles();
 }
 
 
 // ── Background gradient ───────────────────────────────────────
 
 function _drawBackground() {
+  let bgPulse = map(audioLevel, 0, 0.08, 0, 25);
+
   for (let y = 0; y < height; y++) {
     let t = y / height;
-    stroke(lerp(2, 1, t), lerp(8, 18, t), lerp(45, 14, t));
+
+    let r = lerp(2, 1, t);
+    let g = lerp(8, 18, t) + bgPulse;
+    let b = lerp(45, 14, t) + bgPulse;
+
+    stroke(r, g, b);
     line(0, y, width, y);
   }
 }
-
 
 // ── Star field ────────────────────────────────────────────────
 
@@ -183,8 +206,12 @@ function _drawStars() {
 
   for (let s of stars) {
     let tw    = sin(frameCount * s.twinkleSpeed + s.twinkleOffset);
-    let alpha = map(tw, -1, 1, 80, s.bright);
-    let sz    = s.size + map(tw, -1, 1, 0, 0.8);
+    let audioBoost = map(audioLevel, 0, 0.3, 0, 160);
+
+    let alpha = map(tw, -1, 1, 80, s.bright) + audioBoost;
+    alpha = constrain(alpha, 0, 255);
+
+    let sz = s.size + map(tw, -1, 1, 0, 0.8) + audioLevel * 30;
 
     if (s.size > 1.8) {
       fill(200, 220, 255, 18);
@@ -192,6 +219,15 @@ function _drawStars() {
     }
     fill(210, 225, 255, alpha);
     ellipse(s.x + s.px, s.y + s.py, sz, sz);
+
+    if (s.size > 2.2 && tw > 0.5) {
+      stroke(220, 235, 255, alpha * 0.6);
+      strokeWeight(0.5);
+      let arm = sz * 2.5;
+      line(s.x + s.px - arm, s.y + s.py, s.x + s.px + arm, s.y + s.py);
+line(s.x + s.px, s.y + s.py - arm, s.x + s.px, s.y + s.py + arm);
+      noStroke();
+    }
   }
 }
 

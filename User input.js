@@ -1,7 +1,7 @@
 // =============================================================
 // input-controls.js
 // User Input Mechanic — Interactive Feeding & Species Switching
-// Creative Director: Zihan Zhong
+// Creative Director: Menghao Li
 // =============================================================
 // Interactions:
 //   Mouse Click  → Drop food pellets; nearby schools are attracted
