@@ -153,7 +153,7 @@ function _buildMembers(cfg) {
         members.push({
           offsetX: ox,
           offsetY: oy,
-          size:    random(8, 13),
+          size:    random(12, 18),
           speed:   random(0.35, 0.75),
           alpha:   random(160, 210)  // fixed per-member — avoids per-frame flicker
         });
@@ -165,7 +165,7 @@ function _buildMembers(cfg) {
       members.push({
         offsetX: random(-spread * 1.4, spread * 1.4),
         offsetY: random(-spread * 1.4, spread * 1.4),
-        size:    random(8, 13),
+        size:    random(12, 18),
         speed:   random(0.35, 0.75),
         alpha:   random(160, 210)  // fixed per-member — avoids per-frame flicker
       });
