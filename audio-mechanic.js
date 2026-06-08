@@ -1,4 +1,25 @@
+// =============================================================
 // audio-mechanic.js
+// Audio Mechanic — Reactive Ocean Soundscape
+// Creative Director: Xuanning Jin
+// =============================================================
+// Uses p5.Amplitude to analyse two audio tracks in real time:
+//   bgm          → drives star brightness, background colour pulse
+//   bubbleSound  → controls bubble spawn rate and bubble size
+// Both levels are smoothed with lerp() each frame to avoid
+// jittery jumps. All audio is gated behind an "Enter Ocean"
+// button to comply with browser autoplay policy.
+// =============================================================
+// Public API (called from sketch.js):
+//   preloadAudio()  — call inside preload()
+//   setupAudio()    — call inside setup()
+//   drawAudio()     — call at top of draw(), updates audioLevel
+//   drawBubbles()   — call at bottom of draw()
+// =============================================================
+// This code was developed with the assistance of Claude (Anthropic).
+// Claude assisted with the dual-analyser setup, the lerp()-based
+// level smoothing pattern, and the bubble rendering logic.
+// =============================================================
 
 let bgm;
 let bubbleSound;

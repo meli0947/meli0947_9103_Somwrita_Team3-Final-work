@@ -1,18 +1,25 @@
 // =============================================================
-// plants.js
-// Time-Based Sea-Floor Plant Growth
-// Creative Director: Menghao Li
+// perlin.js
+// Perlin Noise & Randomness Mechanic — Organic Star Movement
+// Creative Director: Zihan Zhong
 // =============================================================
-// Three plant types grow from the bottom of the canvas over
-// time, driven by millis() so growth is frame-rate independent.
-//   Type 0 — Seagrass blades   (bezier curves, gentle sway)
-//   Type 1 — Segmented kelp    (jointed stems with side leaves)
-//   Type 2 — Branching coral   (recursive tree structure)
+// Each star receives a unique random noiseOffset seed at init.
+// Every frame, two independent noise() calls produce smooth px/py
+// drift values. A third noise() call generates a random angle
+// used for mouse-proximity disturbance, so stars near the cursor
+// scatter organically rather than in a fixed direction.
+// Random values control each star's size, brightness, twinkle
+// speed, and twinkle phase so no two stars behave identically.
 // =============================================================
 // Public API (called from sketch.js):
-//   initPlants()    — call inside initScene()
-//   updatePlants()  — call inside draw(), after background
+//   initPerlin(starsArray)    — call inside initScene()
+//   updatePerlin(starsArray)  — call inside _drawStars()
 // =============================================================
+// This code was developed with the assistance of Claude (Anthropic).
+// Claude assisted with the dual-axis noise drift pattern and the
+// mouse-disturbance angle derivation using noise() * TWO_PI.
+// ============================================================
+
 
 let plants    = [];
 let startTime;

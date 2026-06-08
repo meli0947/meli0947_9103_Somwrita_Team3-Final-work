@@ -3,10 +3,15 @@
 // Starry Deep-Sea Aquarium  |  IDEA9103 Team 3
 // =============================================================
 // Coordinates all mechanic modules:
-//   input-controls.js  (Menghao Li)   ← user input
+//   audio-mechanic.js  (Xuanning Jin)  ← sound reactivity
+//   time-based.js      (Yuzhu Wei)     ← time-based plant growth
 //   perlin.js          (Zihan Zhong)   ← organic star movement
-//   plants.js          (Yuzhu Wei)    ← time-based plant growth
-//   audio-mechanic.js  (Xuanning Jin)      ← sound reactivity (TBD)
+//   input-controls.js  (Menghao Li)    ← user input
+// =============================================================
+// This code was developed with the assistance of Claude (Anthropic).
+// Claude assisted with the zone-boundary bounce logic in
+// _updateAndDrawSchools(), the _buildMembers() placement algorithm,
+// and the overall module coordination structure.
 // =============================================================
 
 let stars   = [];
