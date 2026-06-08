@@ -317,7 +317,12 @@ function _updateAndDrawSchools() {
 
     // ── Draw members ──────────────────────────────────────────
     let facingRight = sc.vx >= 0;
-    let speed       = sqrt(sc.vx * sc.vx + sc.vy * sc.vy); // actual school speed this frame
+    let speed       = sqrt(sc.vx * sc.vx + sc.vy * sc.vy);
+
+    // Update clusterScale once per school per frame (NOT inside the member loop).
+    // lerp factor 0.018 ≈ 1.5s to fully settle — smooth huddle and expand.
+    let targetScale = sc.fedTimer > 0 ? 0.55 : 1.0;
+    sc.clusterScale = lerp(sc.clusterScale, targetScale, 0.018);
 
     for (let f of sc.fish) {
       let t  = frameCount * f.speed * 0.01;
@@ -325,11 +330,6 @@ function _updateAndDrawSchools() {
       // Swim wobble amplitude scales with school speed — faster = more tail-wag
       let wobbleX = map(speed, 0, baseSpd * 2.8, 2, 9);
       let wobbleY = map(speed, 0, baseSpd * 2.8, 1, 5);
-
-      // clusterScale lerps toward target each frame — fed schools slowly huddle
-      // inward, then gently expand back out. 0.06 lerp factor ≈ 0.5s to settle.
-      let targetScale = sc.fedTimer > 0 ? 0.55 : 1.0;
-      sc.clusterScale = lerp(sc.clusterScale, targetScale, 0.06);
 
       let fx = sc.cx + f.offsetX * sc.clusterScale + sin(t + f.offsetX * 0.05) * wobbleX;
       let fy = sc.cy + f.offsetY * sc.clusterScale + cos(t * 1.2 + f.offsetY * 0.05) * wobbleY;
