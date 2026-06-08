@@ -87,7 +87,9 @@ function initScene() {
   ];
 
   // ── Four schools, one per zone ─────────────────────────────
-  let cfg = SPECIES_CONFIG[1];
+  // Use getCurrentSpecies() so windowResized() respects the current species
+  // instead of always resetting back to Small Fish (species 1).
+  let cfg = SPECIES_CONFIG[getCurrentSpecies()];
   for (let s = 0; s < 4; s++) {
     let z   = zones[s];
     let dir = random(TWO_PI);
@@ -142,7 +144,13 @@ function _buildMembers(cfg) {
         if (dist(ox, oy, m.offsetX, m.offsetY) < minGap) { tooClose = true; break; }
       }
       if (!tooClose) {
-        members.push({ offsetX: ox, offsetY: oy, size: random(8, 13), speed: random(0.35, 0.75) });
+        members.push({
+          offsetX: ox,
+          offsetY: oy,
+          size:    random(8, 13),
+          speed:   random(0.35, 0.75),
+          alpha:   random(160, 210)  // fixed per-member — avoids per-frame flicker
+        });
         placed = true;
         break;
       }
@@ -152,7 +160,8 @@ function _buildMembers(cfg) {
         offsetX: random(-spread * 1.4, spread * 1.4),
         offsetY: random(-spread * 1.4, spread * 1.4),
         size:    random(8, 13),
-        speed:   random(0.35, 0.75)
+        speed:   random(0.35, 0.75),
+        alpha:   random(160, 210)  // fixed per-member — avoids per-frame flicker
       });
     }
   }
@@ -225,7 +234,7 @@ function _drawStars() {
       strokeWeight(0.5);
       let arm = sz * 2.5;
       line(s.x + s.px - arm, s.y + s.py, s.x + s.px + arm, s.y + s.py);
-line(s.x + s.px, s.y + s.py - arm, s.x + s.px, s.y + s.py + arm);
+      line(s.x + s.px, s.y + s.py - arm, s.x + s.px, s.y + s.py + arm);
       noStroke();
     }
   }
@@ -283,7 +292,8 @@ function _updateAndDrawSchools() {
       let t   = frameCount * f.speed * 0.01;
       let fx  = sc.cx + f.offsetX + sin(t + f.offsetX * 0.05) * 3;
       let fy  = sc.cy + f.offsetY + cos(t * 1.2 + f.offsetY * 0.05) * 2;
-      let col = color(200, 220, 255, random(160, 210));
+      // Use f.alpha (set once at spawn) so colour is stable across frames
+      let col = color(200, 220, 255, f.alpha);
 
       if (species === 3) {
         fy += sin(frameCount * 0.025 + f.offsetX * 0.06) * 6;
