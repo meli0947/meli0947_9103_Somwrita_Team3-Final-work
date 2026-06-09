@@ -97,6 +97,7 @@ ripple rings (`Ripple`). Schools within range are pushed away; a strong
 hit also triggers *fright* — the school darts at 2.8× speed, members 
 flash brighter, and the burst ramps back to baseline over ~50 frames.
 
+
 - **Keys 1 / 2 / 3 — switching species.** Swaps the aquarium between Small 
 Fish, Manta Ray, and Jellyfish. A brief dark overlay (`switchFade`) 
 softens the transition, then `rebuildSchools()` repositions all four 
