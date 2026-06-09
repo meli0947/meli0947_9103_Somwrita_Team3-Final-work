@@ -20,6 +20,7 @@
 
 let plants    = [];
 let startTime;
+let rocks = [];
 
 
 // ── Public API ────────────────────────────────────────────────
@@ -158,5 +159,58 @@ function _drawBranch(x, y, dx, dy, depth, col, growFrac, sway, phase) {
     noStroke();
     fill(red(col) + 30, green(col) + 20, blue(col), 200);
     ellipse(ex, ey, thick * 2.5 * growFrac, thick * 2.5 * growFrac);
+  }
+}
+
+  // —— added rocks --
+  function initRocks() {
+  rocks = [];
+  let count = floor(width / 60);
+  for (let i = 0; i < count; i++) {
+    let x = random(i * 60, (i + 1) * 60);
+    let w = random(40, 110);
+    let h = random(20, 55);
+    let numPts = floor(random(6, 10));
+    let pts = [];
+    for (let j = 0; j < numPts; j++) {
+      let angle = map(j, 0, numPts, 0, TWO_PI);
+      let rx = (w / 2) * random(0.7, 1.0);
+      let ry = (h / 2) * random(0.6, 1.0);
+      pts.push({ x: cos(angle) * rx, y: sin(angle) * ry });
+    }
+    rocks.push({
+      x, pts,
+      col: color(random(60, 100), random(60, 95), random(70, 110))
+    });
+  }
+}
+
+function drawRocks() {
+  for (let r of rocks) {
+    // shadow
+    fill(20, 20, 30, 120);
+    noStroke();
+    beginShape();
+    for (let p of r.pts) {
+      vertex(r.x + p.x + 6, height + p.y - 2);
+    }
+    endShape(CLOSE);
+
+    // main
+    fill(r.col);
+    noStroke();
+    beginShape();
+    for (let p of r.pts) {
+      vertex(r.x + p.x, height + p.y);
+    }
+    endShape(CLOSE);
+
+    // highlight
+    fill(255, 255, 255, 25);
+    beginShape();
+    for (let p of r.pts) {
+      vertex(r.x + p.x - 3, height + p.y - 4);
+    }
+    endShape(CLOSE);
   }
 }

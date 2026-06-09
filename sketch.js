@@ -59,6 +59,7 @@ function initScene() {
   schools = [];
   zones   = [];
 
+
   // ── Populate stars ─────────────────────────────────────────
   for (let i = 0; i < 280; i++) {
     stars.push({
@@ -72,8 +73,9 @@ function initScene() {
   }
   initPerlin(stars); // from perlin.js
 
-  // ── Initialise plants (from plants.js) ─────────────────────
+  // ── Initialise plants (from time-based.js) ─────────────────────
   initPlants();
+  initRocks();
 
   // ── Build 4 zones (2×2 grid) ──────────────────────────────
   let hw = width  / 2;
@@ -187,6 +189,7 @@ function draw() {
 
   _drawBackground();
   _drawStars();
+  drawRocks(); 
 
   updatePlants();
   updateInputLayer();
