@@ -72,22 +72,31 @@ Randomness initialises the system — each star's seed, speed, size, brightness,
 This mechanic turns the viewer into a participant. Three input channels — 
 click, drag, and number keys — drive both the immediate action and a 
 chain of school responses.
-**Mouse click — feeding the fish.** A green pellet drops and slowly 
+- **Mouse click — feeding the fish.** A green pellet drops and slowly 
 tumbles downward (`FoodParticle`). The nearest school steers toward it, 
 and when close enough, `consume()` is called and the pellet fades. The 
 school then enters a *fed* state for ~1.5s: speed drops to 55% and 
 members huddle inward (`clusterScale` lerps 1.0 → 0.55 → 1.0).
-**Mouse drag — disturbing the water.** Each drag leaves expanding double 
+- **Mouse drag — disturbing the water.** Each drag leaves expanding double 
 ripple rings (`Ripple`). Schools within range are pushed away; a strong 
 hit also triggers *fright* — the school darts at 2.8× speed, members 
 flash brighter, and the burst ramps back to baseline over ~50 frames.
-**Keys 1 / 2 / 3 — switching species.** Swaps the aquarium between Small 
+- **Keys 1 / 2 / 3 — switching species.** Swaps the aquarium between Small 
 Fish, Manta Ray, and Jellyfish. A brief dark overlay (`switchFade`) 
 softens the transition, then `rebuildSchools()` repositions all four 
 schools randomly.
+
+**Under the hood.** The mechanic uses p5's input callbacks 
+(`mousePressed`, `mouseDragged`, `keyPressed`) as entry points, with two 
+particle classes (`FoodParticle`, `Ripple`) managing their own life cycle 
+through `update()` / `draw()` / `isDead()` and array splicing. Distance 
+checks via `dist()` drive food attraction, ripple repulsion, and the 
+"close enough to eat" trigger. Food pellets rotate using `translate()` + 
+`rotate()` inside a `push/pop` pair. The species-switch flash is a 
+full-canvas semi-transparent `rect()` drawn each frame while `switchFade > 0`.
+
 All transitions use `lerp()` so the schools feel like living organisms 
 rather than state machines snapping between values.
-
 ---
 
 ## AI Acknowledgement
@@ -154,8 +163,8 @@ project/
 ├── sketch.js             # Main p5.js sketch — coordinates all modules
 ├── audio-mechanic.js     # Audio mechanic (Xuanning Jin)
 ├── time-based.js         # Time-based plant growth mechanic (Yuzhu Wei)
-├── perlin.js             # Perlin noise star drift mechanic (Zihan Zhong)
-├── input-controls.js     # User input mechanic (Menghao Li)
+├── Perlin noise.js       # Perlin noise star drift mechanic (Zihan Zhong)
+├── User input.js     # User input mechanic (Menghao Li)
 └── libraries/
     ├── p5.min.js
     └── p5.sound.min.js
