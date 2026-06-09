@@ -22,6 +22,7 @@ let plants    = [];
 let startTime;
 let rocks = [];
 let oceanStarted = false;
+let anemones = [];
 
 
 // ── Public API ────────────────────────────────────────────────
@@ -213,5 +214,63 @@ function drawRocks() {
       vertex(r.x + p.x - 3, height + p.y - 4);
     }
     endShape(CLOSE);
+  }
+}
+
+// —— added anemones --
+function initAnemones() {
+  anemones = [];
+  let count = floor(width / 120);
+  for (let i = 0; i < count; i++) {
+    let x         = random(i * 120, (i + 1) * 120);
+    let tentacles = floor(random(6, 12));
+    let h         = random(30, 65);
+    let isRed     = random(1) > 0.5;
+    let col       = isRed
+      ? color(random(200, 255), random(20, 60),  random(20, 60),  180)
+      : color(random(20, 60),  random(80, 140), random(200, 255), 180);
+
+    anemones.push({
+      x, h, tentacles, col,
+      swayOffset: random(TWO_PI),
+      swaySpeed:  random(0.012, 0.022)
+    });
+  }
+}
+
+function drawAnemones() {
+  for (let a of anemones) {
+    let sway = sin(frameCount * a.swaySpeed + a.swayOffset);
+
+    for (let i = 0; i < a.tentacles; i++) {
+      let angle    = map(i, 0, a.tentacles, -PI * 0.6, PI * 0.6);
+      let wobble   = sway * 0.3 + sin(frameCount * a.swaySpeed * 1.4 + i * 0.8) * 0.15;
+      let finalAng = angle + wobble;
+      let tipX     = a.x + sin(finalAng) * a.h;
+      let tipY     = height - cos(finalAng) * a.h;
+
+      // tentacle stem
+      stroke(red(a.col), green(a.col), blue(a.col), 160);
+      strokeWeight(1.5);
+      noFill();
+      beginShape();
+      vertex(a.x, height);
+      bezierVertex(
+        a.x + sin(finalAng) * a.h * 0.3, height - a.h * 0.2,
+        a.x + sin(finalAng) * a.h * 0.7, height - a.h * 0.6,
+        tipX, tipY
+      );
+      endShape();
+
+      // tip bulb
+      noStroke();
+      fill(red(a.col) + 40, green(a.col) + 20, blue(a.col), 200);
+      ellipse(tipX, tipY, 5, 5);
+    }
+
+    // base
+    noStroke();
+    fill(red(a.col) - 30, green(a.col) - 20, blue(a.col), 150);
+    ellipse(a.x, height, a.tentacles * 3, 10);
   }
 }

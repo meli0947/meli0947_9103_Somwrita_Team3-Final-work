@@ -76,6 +76,8 @@ function initScene() {
   // ── Initialise plants (from time-based.js) ─────────────────────
   initPlants();
   initRocks();
+  initAnemones();
+ 
 
   // ── Build 4 zones (2×2 grid) ──────────────────────────────
   let hw = width  / 2;
@@ -190,6 +192,8 @@ function draw() {
   _drawBackground();
   _drawStars();
   drawRocks(); 
+  drawAnemones();
+  
 
   updatePlants();
   updateInputLayer();
