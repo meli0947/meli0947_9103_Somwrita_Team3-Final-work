@@ -30,7 +30,7 @@ function initPlants() {
   plants    = [];
   startTime = millis();
 
-  let cols = floor(width / 38);
+  let cols = floor(width / 28);
   for (let i = 0; i < cols; i++) {
     let x    = random(i * 38, (i + 1) * 38);
     let type = floor(random(3));
