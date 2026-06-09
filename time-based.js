@@ -21,6 +21,7 @@
 let plants    = [];
 let startTime;
 let rocks = [];
+let oceanStarted = false;
 
 
 // ── Public API ────────────────────────────────────────────────
@@ -109,7 +110,7 @@ function _drawPlant(pl, elapsed) {
       line(sx0, sy0, sx1, sy1);
 
       if (seg % 2 === 0) {
-        let leafLen = pl.leafLens[seg] * growFrac;
+        let leafLen = (oceanStarted ? random(10, 18) : pl.leafLens[seg]) * growFrac;
         let dir     = (seg % 4 === 0) ? 1 : -1;
         noStroke();
         fill(red(pl.col) - 20, green(pl.col) + 10, blue(pl.col), 180);

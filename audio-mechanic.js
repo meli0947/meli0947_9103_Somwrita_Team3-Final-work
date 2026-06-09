@@ -111,6 +111,7 @@ function toggleAudio() {
   } else {
     bgm.loop();
     bubbleSound.loop();
+    oceanStarted = true;
   }
 }
 
