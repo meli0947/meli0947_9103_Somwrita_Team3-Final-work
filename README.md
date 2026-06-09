@@ -26,7 +26,16 @@ The project is built entirely in p5.js (global mode) with p5.sound for audio ana
 
 **Perlin noise star field** — 280 star particles each carry a unique `noiseOffset` seed and an individual `driftSpeed`, both randomised at initialisation. Every frame, `noise()` maps each star's position to a smooth, continuous drift (`px`, `py`), giving the star field a slow, breathing quality that feels organic rather than mechanical. The mouse adds a secondary disturbance: stars within 200px of the cursor receive an additional Perlin-derived, angle-driven nudge, creating gentle, unpredictable ripples through the field. Twinkle is handled separately with a per-star `sin()` oscillator.
 
-**Time-based plant growth** — three plant species (seagrass blades, segmented kelp, branching coral) each grow from `height` upward using `millis()` so growth speed is frame-rate independent. A `growFrac` value (0 → 1 over 20 seconds) scales both height and stroke weight, giving a slow organic reveal. Coral uses a recursive `_drawBranch()` function capped at depth 4.
+**Time-based plant growth** — three plant species (seagrass blades, segmented kelp, branching coral) each grow from `height` upward using `millis()` so growth speed is frame-rate independent. A `growFrac` value (0 → 1 over 20 seconds) scales both height and stroke weight, giving a slow organic reveal. Coral uses a recursive `_drawBranch()` function capped at depth 4.  
+- **`millis()`-based growth** — `growFrac = constrain(age / 20000, 0, 1)` drives all size scaling, independent of frame rate
+- **`sin()`-based sway** — each plant has its own `swayOffset` and `swaySpeed` so nothing moves in sync
+- **Pre-generated `leafLens[]` array** — kelp leaf lengths are fixed at `initPlants()` time rather than calling `random()` every frame, preventing per-frame jitter
+- **`oceanStarted` flag** — kelp leaves remain static before the user clicks Enter Ocean; once audio starts, leaves switch to `random()` per-frame motion, making the scene feel responsive to user interaction
+- **Recursive branching** — coral uses depth-limited recursion with spread angle and length decay (`len * 0.68`) to produce natural-looking tree growth
+- **Irregular polygon rocks** — vertices are distributed around an ellipse with per-vertex random radius variation, plus shadow and highlight passes for depth
+- **Layered `sin()` tentacles** — each anemone tentacle combines a global sway with a per-tentacle phase offset for organic, non-uniform motion
+- **Curvevertex caustics** — caustic rings use `curveVertex()` with per-vertex radius modulated by multiple overlapping `sin()`/`cos()` waves, drifting slowly across the scene
+
 
 **Audio amplitude analysis** — This mechanic uses the `p5.sound` library and amplitude analysis to create a responsive underwater atmosphere. Two p5.Amplitude analysers run in parallel: one for the background music track and one for the looping bubble sound. Their levels (`audioLevel`, `bubbleLevel`) are smoothed using `lerp()` each frame and used to control background brightness, star glow, bubble spawn rate, and bubble size in real time.
 The `p5.sound` library was chosen because it supports real-time audio analysis and integrates smoothly with generative visual systems. All audio playback is triggered through a user interaction button to comply with browser autoplay policies.
@@ -60,6 +69,8 @@ Integration of the audio system into the final combined project structure and me
 
 ### Time-Based — Yuzhu Wei (`time-based.js`)
 Plants grow from the sea floor over time using `millis()`. Three types appear: **seagrass blades** (bezier-curve filled shapes that sway with `sin()`), **segmented kelp** (jointed stem with alternating side leaves), and **branching coral** (recursive tree, depth 4). Each plant has a random `spawnTime` offset so they don't all appear at once. Growth fraction (`growFrac`) scales from 0 to 1 over 20 seconds and controls both height and stroke weight.
+
+
 
 ### Perlin Noise & Randomness — Zihan Zhong (`perlin.js`)
 The interaction is built on two layers. 
