@@ -6,6 +6,7 @@ function setup() {
   colorMode(RGB);
   startTime = millis();
   initScene();
+  setupAudio();
 }
 
 function initScene() {
@@ -27,6 +28,69 @@ function initScene() {
         : color(random(30, 90), random(160, 220), random(100, 160), 200)
     });
   }
+}
+
+/**
+ * rebuildSchools() — called by input-controls.js on species switch.
+ */
+function rebuildSchools() {
+  schools = [];
+  let cfg = SPECIES_CONFIG[getCurrentSpecies()];
+  for (let s = 0; s < 4; s++) {
+    let z   = zones[s];
+    let dir = random(TWO_PI);
+    let cx  = random(z.x1 + ZONE_PADDING, z.x2 - ZONE_PADDING);
+    let cy  = random(z.y1 + ZONE_PADDING, z.y2 - ZONE_PADDING);
+    schools.push({
+      cx, cy,
+      vx:     cos(dir) * 0.45,
+      vy:     sin(dir) * 0.18,
+      zoneId: s,
+      fish:   _buildMembers(cfg)
+    });
+  }
+}
+
+function _buildMembers(cfg) {
+  let members  = [];
+  let { count, minGap } = cfg;
+  let spread   = minGap * sqrt(count) * 0.85;
+  let maxTries = 200;
+
+  for (let i = 0; i < count; i++) {
+    let placed = false;
+    for (let attempt = 0; attempt < maxTries; attempt++) {
+      let angle = random(TWO_PI);
+      let r     = random(0, spread);
+      let ox    = cos(angle) * r;
+      let oy    = sin(angle) * r;
+      let tooClose = false;
+      for (let m of members) {
+        if (dist(ox, oy, m.offsetX, m.offsetY) < minGap) { tooClose = true; break; }
+      }
+      if (!tooClose) {
+        members.push({
+          offsetX: ox,
+          offsetY: oy,
+          size:    random(8, 13),
+          speed:   random(0.35, 0.75),
+          alpha:   random(160, 210)  // fixed per-member — avoids per-frame flicker
+        });
+        placed = true;
+        break;
+      }
+    }
+    if (!placed) {
+      members.push({
+        offsetX: random(-spread * 1.4, spread * 1.4),
+        offsetY: random(-spread * 1.4, spread * 1.4),
+        size:    random(8, 13),
+        speed:   random(0.35, 0.75),
+        alpha:   random(160, 210)  // fixed per-member — avoids per-frame flicker
+      });
+    }
+  }
+  return members;
 }
 
 function windowResized() {
@@ -134,3 +198,5 @@ function draw() {
     drawPlant(pl, elapsed);
   }
 }
+
+// mousePressed / mouseDragged / keyPressed → defined in input-controls.js
