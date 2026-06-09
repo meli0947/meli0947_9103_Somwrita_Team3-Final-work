@@ -49,15 +49,15 @@ A bubble particle system was also implemented. Bubble particles are continuously
 | Menghao Li | User Input | `input-controls.js` |
 
 ### Audio — Xuanning Jin (`audio-mechanic.js`)
-Responsible for designing and implementing the sound-reactive atmosphere system for the aquarium environment.
+Responsible for designing and implementing the sound-reactive atmosphere system for the aquarium environment. 
 Implemented:
-- **Background music playback and browser-compatible audio interaction button
-- **Real-time audio analysis using the `p5.sound` library and `p5.Amplitude`
-- **Audio-reactive background brightness changes
-- **Dynamic star glow and pulsing effects linked to music volume
-- **Floating bubble particle system driven by a separate bubble audio layer
-- **Smooth visual transitions using `lerp()` interpolation
-- **Integration of the audio system into the final combined project structure and merge workflow
+- Background music playback and browser-compatible audio interaction button
+- Real-time audio analysis using the `p5.sound` library and `p5.Amplitude`
+- Audio-reactive background brightness changes
+- Dynamic star glow and pulsing effects linked to music volume
+- Floating bubble particle system driven by a separate bubble audio layer
+- Smooth visual transitions using `lerp()` interpolation
+- Integration of the audio system into the final combined project structure and merge workflow
 
 ### Time-Based — Yuzhu Wei (`time-based.js`)
 Plants grow from the sea floor over time using `millis()`. Three types appear: **seagrass blades** (bezier-curve filled shapes that sway with `sin()`), **segmented kelp** (jointed stem with alternating side leaves), and **branching coral** (recursive tree, depth 4). Each plant has a random `spawnTime` offset so they don't all appear at once. Growth fraction (`growFrac`) scales from 0 to 1 over 20 seconds and controls both height and stroke weight.
