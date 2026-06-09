@@ -34,8 +34,13 @@ function initPlants() {
     let type = floor(random(3));
     let maxH = random(0.22, 0.5) * height * 0.5; // capped at 50% of screen height
     let segments = type === 1 ? floor(random(4, 8)) : floor(random(3, 6));
+    let leafLens = [];
+    for (let s = 0; s < segments; s++) {
+      leafLens.push(random(10, 18));
+    }
+
     plants.push({
-      x, type, maxH, segments,
+      x, type, maxH, segments, leafLens,
       spawnTime:  random(0, 20000),
       swayOffset: random(TWO_PI),
       swaySpeed:  random(0.008, 0.018),
@@ -103,7 +108,7 @@ function _drawPlant(pl, elapsed) {
       line(sx0, sy0, sx1, sy1);
 
       if (seg % 2 === 0) {
-        let leafLen = random(10, 18) * growFrac;
+        let leafLen = pl.leafLens[seg] * growFrac;
         let dir     = (seg % 4 === 0) ? 1 : -1;
         noStroke();
         fill(red(pl.col) - 20, green(pl.col) + 10, blue(pl.col), 180);
