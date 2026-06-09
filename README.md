@@ -26,14 +26,7 @@ The project is built entirely in p5.js (global mode) with p5.sound for audio ana
 
 **Perlin noise star field** — 280 star particles each carry a unique `noiseOffset` seed and an individual `driftSpeed`, both randomised at initialisation. Every frame, `noise()` maps each star's position to a smooth, continuous drift (`px`, `py`), giving the star field a slow, breathing quality that feels organic rather than mechanical. The mouse adds a secondary disturbance: stars within 200px of the cursor receive an additional Perlin-derived, angle-driven nudge, creating gentle, unpredictable ripples through the field. Twinkle is handled separately with a per-star `sin()` oscillator.
 
-**Time-based plant growth** — - **`millis()`-based growth** — `growFrac = constrain(age / 20000, 0, 1)` drives all size scaling, independent of frame rate
-- **`sin()`-based sway** — each plant has its own `swayOffset` and `swaySpeed` so nothing moves in sync
-- **Pre-generated `leafLens[]` array** — kelp leaf lengths are fixed at `initPlants()` time rather than calling `random()` every frame, preventing per-frame jitter
-- **`oceanStarted` flag** — kelp leaves remain static before the user clicks Enter Ocean; once audio starts, leaves switch to `random()` per-frame motion, making the scene feel responsive to user interaction
-- **Recursive branching** — coral uses depth-limited recursion with spread angle and length decay (`len * 0.68`) to produce natural-looking tree growth
-- **Irregular polygon rocks** — vertices are distributed around an ellipse with per-vertex random radius variation, plus shadow and highlight passes for depth
-- **Layered `sin()` tentacles** — each anemone tentacle combines a global sway with a per-tentacle phase offset for organic, non-uniform motion
-- **Curvevertex caustics** — caustic rings use `curveVertex()` with per-vertex radius modulated by multiple overlapping `sin()`/`cos()` waves, drifting slowly across the scene
+**Time-based plant growth** — three plant species (seagrass blades, segmented kelp, branching coral) each grow from `height` upward using `millis()` so growth speed is frame-rate independent. A `growFrac` value (0 → 1 over 20 seconds) scales both height and stroke weight, giving a slow organic reveal. Coral uses a recursive `_drawBranch()` function capped at depth 4.
 
 **Audio amplitude analysis** — This mechanic uses the `p5.sound` library and amplitude analysis to create a responsive underwater atmosphere. Two p5.Amplitude analysers run in parallel: one for the background music track and one for the looping bubble sound. Their levels (`audioLevel`, `bubbleLevel`) are smoothed using `lerp()` each frame and used to control background brightness, star glow, bubble spawn rate, and bubble size in real time.
 The `p5.sound` library was chosen because it supports real-time audio analysis and integrates smoothly with generative visual systems. All audio playback is triggered through a user interaction button to comply with browser autoplay policies.
@@ -56,23 +49,17 @@ A bubble particle system was also implemented. Bubble particles are continuously
 | Menghao Li | User Input | `input-controls.js` |
 
 ### Audio — Xuanning Jin (`audio-mechanic.js`)
-Responsible for designing and implementing the sound-reactive atmosphere system for the aquarium environment. 
-Implemented:
-- Background music playback and browser-compatible audio interaction button
-- Real-time audio analysis using the `p5.sound` library and `p5.Amplitude`
-- Audio-reactive background brightness changes
-- Dynamic star glow and pulsing effects linked to music volume
-- Floating bubble particle system driven by a separate bubble audio layer
-- Smooth visual transitions using `lerp()` interpolation
-- Integration of the audio system into the final combined project structure and merge workflow
+Responsible for designing and implementing the sound-reactive atmosphere system for the aquarium environment.
+Background music playback and browser-compatible audio interaction button
+Real-time audio analysis using the `p5.sound` library and `p5.Amplitude`
+Audio-reactive background brightness changes
+Dynamic star glow and pulsing effects linked to music volume
+Floating bubble particle system driven by a separate bubble audio layer
+Smooth visual transitions using `lerp()` interpolation
+Integration of the audio system into the final combined project structure and merge workflow
 
 ### Time-Based — Yuzhu Wei (`time-based.js`)
-This file owns the following systems:
-- **Plant growth** — three types grow from zero height to full size over 20 seconds each, staggered by a random `spawnTime` so the floor fills in organically rather than all at once
-- **Rocks** — irregularly shaped static polygons with shadow and highlight layers, distributed across the canvas base
-- **Anemones** — red and blue tentacled creatures anchored to the floor, each tentacle animated with layered `sin()` waves for organic swaying motion
-- **Caustic light** — slow-drifting irregular light rings that simulate water-surface refraction
-
+Plants grow from the sea floor over time using `millis()`. Three types appear: **seagrass blades** (bezier-curve filled shapes that sway with `sin()`), **segmented kelp** (jointed stem with alternating side leaves), and **branching coral** (recursive tree, depth 4). Each plant has a random `spawnTime` offset so they don't all appear at once. Growth fraction (`growFrac`) scales from 0 to 1 over 20 seconds and controls both height and stroke weight.
 
 ### Perlin Noise & Randomness — Zihan Zhong (`perlin.js`)
 The interaction is built on two layers. 
@@ -85,33 +72,19 @@ Randomness initialises the system — each star's seed, speed, size, brightness,
 This mechanic turns the viewer into a participant. Three input channels — 
 click, drag, and number keys — drive both the immediate action and a 
 chain of school responses.
-
-- **Mouse click — feeding the fish.** A green pellet drops and slowly 
+**Mouse click — feeding the fish.** A green pellet drops and slowly 
 tumbles downward (`FoodParticle`). The nearest school steers toward it, 
 and when close enough, `consume()` is called and the pellet fades. The 
 school then enters a *fed* state for ~1.5s: speed drops to 55% and 
 members huddle inward (`clusterScale` lerps 1.0 → 0.55 → 1.0).
-
-- **Mouse drag — disturbing the water.** Each drag leaves expanding double 
+**Mouse drag — disturbing the water.** Each drag leaves expanding double 
 ripple rings (`Ripple`). Schools within range are pushed away; a strong 
 hit also triggers *fright* — the school darts at 2.8× speed, members 
 flash brighter, and the burst ramps back to baseline over ~50 frames.
-
-
-- **Keys 1 / 2 / 3 — switching species.** Swaps the aquarium between Small 
+**Keys 1 / 2 / 3 — switching species.** Swaps the aquarium between Small 
 Fish, Manta Ray, and Jellyfish. A brief dark overlay (`switchFade`) 
 softens the transition, then `rebuildSchools()` repositions all four 
 schools randomly.
-
-**Under the hood.** The mechanic uses p5's input callbacks 
-(`mousePressed`, `mouseDragged`, `keyPressed`) as entry points, with two 
-particle classes (`FoodParticle`, `Ripple`) managing their own life cycle 
-through `update()` / `draw()` / `isDead()` and array splicing. Distance 
-checks via `dist()` drive food attraction, ripple repulsion, and the 
-"close enough to eat" trigger. Food pellets rotate using `translate()` + 
-`rotate()` inside a `push/pop` pair. The species-switch flash is a 
-full-canvas semi-transparent `rect()` drawn each frame while `switchFade > 0`.
-
 All transitions use `lerp()` so the schools feel like living organisms 
 rather than state machines snapping between values.
 
@@ -146,24 +119,20 @@ All AI-generated sections are commented in the relevant source files with `// Th
 
 - **Shiffman, D. (2024).** *The Nature of Code*, Chapter 8: Fractals. https://natureofcode.com/fractals/ — The recursive `_drawBranch()` coral structure in `time-based.js` is based on the recursive fractal tree algorithm described here. This technique is also commented in the code.
 
-- **p5.js Reference — `bezierVertex()`.** https://p5js.org/reference/p5/bezierVertex/ — Used extensively in `input-controls.js` and `time.based.js` to construct filled biological silhouettes (fish body, manta ray wings, jellyfish bell) via `beginShape` / `bezierVertex` / `endShape`.
+- **p5.js Reference — `bezierVertex()`.** https://p5js.org/reference/p5/bezierVertex/ — Used extensively in `input-controls.js` to construct filled biological silhouettes (fish body, manta ray wings, jellyfish bell) via `beginShape` / `bezierVertex` / `endShape`.
 
 - **p5.sound Reference — `p5.Amplitude`.** https://p5js.org/reference/p5.sound/p5.Amplitude/ — Used in `audio-mechanic.js` to analyse real-time amplitude of two audio tracks and drive visual responses (star glow, background pulse, bubble spawn rate).
 
-
-- **p5.js Reference — `lerp()`.**
-https://p5js.org/reference/p5/lerp/ — 
-Used throughout `input-controls.js`, `sketch.js` and `time.based.js` for smooth state 
+- p5.js Reference — `lerp()`. https://p5js.org/reference/p5/lerp/ — 
+Used throughout `input-controls.js` and `sketch.js` for smooth state 
 transitions (cluster scale, fade overlay, audio level smoothing).
-
-- **p5.js Reference — `curveVertex()`.** https://p5js.org/reference/p5/curveVertex/ — Used in `time-based.js` to construct irregular caustic light rings whose vertices are modulated by overlapping `sin()`/`cos()` waves, producing organic shifting shapes via `beginShape` / `curveVertex` / `endShape`.
 
 ---
 
 ## Interaction Instructions
 
 1. **Open `index.html`** in a modern browser (Chrome or Firefox recommended).
-2. **Click `Enter Ocean`** (top-left button) to start the background music and bubble soundscape. The aquarium reacts dynamically to the audio — the background subtly shifts in brightness, stars pulse with the music, and bubbles rise through the scene. Once audio starts, kelp leaves also animate, making the underwater scene feel fully alive. When the audio stops, the environment gradually returns to its original state while existing bubbles continue drifting upward and fading away.
+2. **Click `Enter Ocean`** (top-left button) to start the background music and bubble soundscape. The aquarium reacts dynamically to the audio — the background subtly shifts in brightness, stars pulse with the music, and bubbles rise through the scene. When the audio stops, the environment gradually returns to its original state while existing bubbles continue drifting upward and fading away.
 3. **Click anywhere** on the canvas to drop food pellets (small spinning 
 green pellets). Nearby fish schools will steer toward the food, and visibly cluster together for a moment after eating it.
 4. **Click and drag** to create ripple rings that disturb the water and push fish schools away.
@@ -185,8 +154,8 @@ project/
 ├── sketch.js             # Main p5.js sketch — coordinates all modules
 ├── audio-mechanic.js     # Audio mechanic (Xuanning Jin)
 ├── time-based.js         # Time-based plant growth mechanic (Yuzhu Wei)
-├── Perlin noise.js       # Perlin noise star drift mechanic (Zihan Zhong)
-├── User input.js     # User input mechanic (Menghao Li)
+├── perlin.js             # Perlin noise star drift mechanic (Zihan Zhong)
+├── input-controls.js     # User input mechanic (Menghao Li)
 └── libraries/
     ├── p5.min.js
     └── p5.sound.min.js
