@@ -148,9 +148,10 @@ All AI-generated sections are commented in the relevant source files with `// Th
 - **p5.sound Reference — `p5.Amplitude`.** https://p5js.org/reference/p5.sound/p5.Amplitude/ — Used in `audio-mechanic.js` to analyse real-time amplitude of two audio tracks and drive visual responses (star glow, background pulse, bubble spawn rate).
 
 - **p5.js Reference — `lerp()`.** https://p5js.org/reference/p5/lerp/ — 
-Used throughout `input-controls.js` and `sketch.js` for smooth state 
+Used throughout `input-controls.js`， `sketch.js` and `time-based.js`for smooth state 
 transitions (cluster scale, fade overlay, audio level smoothing).
 
+- **p5.js Reference — `curveVertex()`.** https://p5js.org/reference/p5/curveVertex/ — Used in `time-based.js` to construct irregular caustic light rings whose vertices are modulated by overlapping `sin()`/`cos()` waves, producing organic shifting shapes via `beginShape` / `curveVertex` / `endShape`.
 ---
 
 ## Interaction Instructions
