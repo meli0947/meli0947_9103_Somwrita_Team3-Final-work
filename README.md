@@ -132,14 +132,16 @@ All AI-generated sections are commented in the relevant source files with `// Th
 
 - **Shiffman, D. (2024).** *The Nature of Code*, Chapter 8: Fractals. https://natureofcode.com/fractals/ — The recursive `_drawBranch()` coral structure in `time-based.js` is based on the recursive fractal tree algorithm described here. This technique is also commented in the code.
 
-- **p5.js Reference — `bezierVertex()`.** https://p5js.org/reference/p5/bezierVertex/ — Used extensively in `input-controls.js` to construct filled biological silhouettes (fish body, manta ray wings, jellyfish bell) via `beginShape` / `bezierVertex` / `endShape`.
+- **p5.js Reference — `bezierVertex()`.** https://p5js.org/reference/p5/bezierVertex/ — Used extensively in `input-controls.js` and `time.based.js` to construct filled biological silhouettes (fish body, manta ray wings, jellyfish bell) via `beginShape` / `bezierVertex` / `endShape`.
 
 - **p5.sound Reference — `p5.Amplitude`.** https://p5js.org/reference/p5.sound/p5.Amplitude/ — Used in `audio-mechanic.js` to analyse real-time amplitude of two audio tracks and drive visual responses (star glow, background pulse, bubble spawn rate).
 
 
 - **p5.sound Reference —  `lerp()`.** https://p5js.org/reference/p5/lerp/ — 
-Used throughout `input-controls.js` and `sketch.js` for smooth state 
+Used throughout `input-controls.js`, `sketch.js` and `time.based.js` for smooth state 
 transitions (cluster scale, fade overlay, audio level smoothing).
+
+- **p5.js Reference — `curveVertex()`.** https://p5js.org/reference/p5/curveVertex/ — Used in `time-based.js` to construct irregular caustic light rings whose vertices are modulated by overlapping `sin()`/`cos()` waves, producing organic shifting shapes via `beginShape` / `curveVertex` / `endShape`.
 
 ---
 
