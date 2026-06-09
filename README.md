@@ -137,7 +137,8 @@ All AI-generated sections are commented in the relevant source files with `// Th
 - **p5.sound Reference — `p5.Amplitude`.** https://p5js.org/reference/p5.sound/p5.Amplitude/ — Used in `audio-mechanic.js` to analyse real-time amplitude of two audio tracks and drive visual responses (star glow, background pulse, bubble spawn rate).
 
 
-- **p5.sound Reference —  `lerp()`.** https://p5js.org/reference/p5/lerp/ — 
+- **p5.js Reference — `lerp()`.**
+https://p5js.org/reference/p5/lerp/ — 
 Used throughout `input-controls.js`, `sketch.js` and `time.based.js` for smooth state 
 transitions (cluster scale, fade overlay, audio level smoothing).
 
@@ -170,8 +171,8 @@ project/
 ├── sketch.js             # Main p5.js sketch — coordinates all modules
 ├── audio-mechanic.js     # Audio mechanic (Xuanning Jin)
 ├── time-based.js         # Time-based plant growth mechanic (Yuzhu Wei)
-├── perlin.js             # Perlin noise star drift mechanic (Zihan Zhong)
-├── input-controls.js     # User input mechanic (Menghao Li)
+├── Perlin noise.js       # Perlin noise star drift mechanic (Zihan Zhong)
+├── User input.js     # User input mechanic (Menghao Li)
 └── libraries/
     ├── p5.min.js
     └── p5.sound.min.js
