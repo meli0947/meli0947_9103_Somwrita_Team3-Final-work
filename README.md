@@ -69,6 +69,10 @@ Integration of the audio system into the final combined project structure and me
 
 ### Time-Based — Yuzhu Wei (`time-based.js`)
 Plants grow from the sea floor over time using `millis()`. Three types appear: **seagrass blades** (bezier-curve filled shapes that sway with `sin()`), **segmented kelp** (jointed stem with alternating side leaves), and **branching coral** (recursive tree, depth 4). Each plant has a random `spawnTime` offset so they don't all appear at once. Growth fraction (`growFrac`) scales from 0 to 1 over 20 seconds and controls both height and stroke weight.
+- **Plant growth** — three types grow from zero height to full size over 20 seconds each, staggered by a random `spawnTime` so the floor fills in organically rather than all at once
+- **Rocks** — irregularly shaped static polygons with shadow and highlight layers, distributed across the canvas base
+- **Anemones** — red and blue tentacled creatures anchored to the floor, each tentacle animated with layered `sin()` waves for organic swaying motion
+- **Caustic light** — slow-drifting irregular light rings that simulate water-surface refraction
 
 
 
